@@ -7,11 +7,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="consoleApp" />
+        <module name="PR_Simulation_Billiard" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="consoleApp" target="9" />
+      <module name="PR_Simulation_Billiard" target="9" />
     </bytecodeTargetLevel>
   </component>
 </project>
