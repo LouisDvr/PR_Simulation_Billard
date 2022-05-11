@@ -7,4 +7,5 @@ module PR.Simulation.Billiard {
     requires kotlinx.coroutines.core.jvm;
     exports app to javafx.graphics, tornadofx;
     exports view to tornadofx;
+    exports controller to tornadofx;
 }
