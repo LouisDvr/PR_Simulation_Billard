@@ -1,3 +1,3 @@
 package model
 
-data class Position(var x: Double, var y: Double)
+data class Position(val x: Double, val y: Double)

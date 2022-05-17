@@ -6,8 +6,9 @@ import tornadofx.*
 class MoveController: Controller() {
 
     private val ballSet = hashSetOf<Ball>()
+    private val ballPairs = mutableListOf<Pair<Ball, Ball>>()
     private val whiteBall: Ball =
-        Ball(0, Position(CANVAS_WIDTH / 4, CANVAS_HEIGHT / 2), Position(CANVAS_WIDTH, CANVAS_HEIGHT))
+        Ball(0,CANVAS_WIDTH / 4, CANVAS_HEIGHT / 2)
 
     init {
         val initialPositions = listOf(
@@ -27,8 +28,14 @@ class MoveController: Controller() {
             computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
             Position(0.75 * CANVAS_WIDTH + 4 * 0.87 * 2 * BALL_RADIUS, 0.5 * CANVAS_HEIGHT)
         )
-        for (i in initialPositions.indices) ballSet.add(Ball(i+1, initialPositions[i], Position(CANVAS_WIDTH, CANVAS_HEIGHT)))
-
+        for (i in initialPositions.indices) ballSet.add(Ball(i+1, initialPositions[i].x, initialPositions[i].y))
+        for (b1 in ballSet) {
+            for (b2 in ballSet) {
+                if (b1 != b2 && !ballPairs.contains(Pair(b2, b1))) {
+                    ballPairs.add(Pair(b1, b2))
+                }
+            }
+        }
     }
 
     /**
@@ -44,10 +51,27 @@ class MoveController: Controller() {
     }
 
     fun getBallsPositions(): HashSet<Position> {
-        return HashSet(ballSet.map { ball -> ball.position.copy() })
+        return HashSet(ballSet.map { ball -> Position(ball.x, ball.y) })
     }
 
     fun getWhitePosition(): Position {
-        return whiteBall.position.copy()
+        return Position(whiteBall.x, whiteBall.y)
+    }
+
+    fun checkCollisions() {
+        for (ball in ballSet) {
+            if (ball.y - BALL_RADIUS <= 0 || ball.y + BALL_RADIUS >= CANVAS_HEIGHT) {
+                ball.changeVelocity(ball.vx, - ball.vy)
+            }
+            if (ball.x - BALL_RADIUS <= 0 || ball.x + BALL_RADIUS >= CANVAS_WIDTH) {
+                ball.changeVelocity(- ball.vx, ball.vy)
+            }
+        }
+        for ((b1, b2) in ballPairs) {
+            if (b1.distanceTo(b2) < 2 * BALL_RADIUS) {
+                b1.changeVelocity(b1.vx, b1.vy) // TODO calculate based on slide 39
+                b2.changeVelocity(b2.vx, b1.vy)
+            }
+        }
     }
 }
