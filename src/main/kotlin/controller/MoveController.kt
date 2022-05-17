@@ -20,11 +20,11 @@ class MoveController: Controller() {
             computeInitialPosition(3, false, 0.75 * CANVAS_WIDTH),
             computeInitialPosition(4, true, 0.75 * CANVAS_WIDTH),
             computeInitialPosition(4, false, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH + 0.87 * 2 * BALL_RADIUS),
-            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH + 0.87 * 2 * BALL_RADIUS),
-            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH + 0.87 * 2 * BALL_RADIUS),
-            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH + 0.87 * 2 * BALL_RADIUS),
-            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH + 0.87 * 2 * BALL_RADIUS),
+            computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
             Position(0.75 * CANVAS_WIDTH + 4 * 0.87 * 2 * BALL_RADIUS, 0.5 * CANVAS_HEIGHT)
         )
         for (i in initialPositions.indices) ballSet.add(Ball(i+1, initialPositions[i], Position(CANVAS_WIDTH, CANVAS_HEIGHT)))
@@ -38,8 +38,8 @@ class MoveController: Controller() {
     private fun computeInitialPosition(distanceFromLeft: Int, top: Boolean, xLeft: Double): Position {
         return Position(
             xLeft + 0.87 * distanceFromLeft * 2 * BALL_RADIUS,
-            if (top) 0.5 * CANVAS_HEIGHT - 0.5 * distanceFromLeft * BALL_RADIUS
-            else 0.5 * CANVAS_HEIGHT + 0.5 * distanceFromLeft * BALL_RADIUS
+            if (top) 0.5 * CANVAS_HEIGHT - distanceFromLeft * BALL_RADIUS
+            else 0.5 * CANVAS_HEIGHT + distanceFromLeft * BALL_RADIUS
         )
     }
 
