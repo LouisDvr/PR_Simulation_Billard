@@ -1,6 +1,11 @@
 package controller
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import model.*
+import model.events.MoveOrderEvent
+import model.events.RefreshEvent
 import tornadofx.*
 
 class MoveController: Controller() {
@@ -13,26 +18,49 @@ class MoveController: Controller() {
     init {
         val initialPositions = listOf(
             computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(3, true, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(3, false, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(4, true, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(4, false, 0.75 * CANVAS_WIDTH),
-            computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-            Position(0.75 * CANVAS_WIDTH + 4 * 0.87 * 2 * BALL_RADIUS, 0.5 * CANVAS_HEIGHT)
+            // TODO: uncomment when it works with 2 balls
+//            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(3, true, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(3, false, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(4, true, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(4, false, 0.75 * CANVAS_WIDTH),
+//            computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+//            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+//            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+//            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+//            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+//            Position(0.75 * CANVAS_WIDTH + 4 * 0.87 * 2 * BALL_RADIUS, 0.5 * CANVAS_HEIGHT)
         )
         for (i in initialPositions.indices) ballSet.add(Ball(i+1, initialPositions[i].x, initialPositions[i].y))
         for (b1 in ballSet) {
+            ballPairs.add(Pair(whiteBall, b1))
             for (b2 in ballSet) {
                 if (b1 != b2 && !ballPairs.contains(Pair(b2, b1))) {
                     ballPairs.add(Pair(b1, b2))
+                }
+            }
+        }
+
+        whiteBall.changeVelocity(20.0, 0.0)
+        subscribe<MoveOrderEvent> {
+            runBlocking {
+                launch {
+                    while (true) {
+                        delay(50)
+                        checkCollisions()
+//                        fire(RefreshEvent)
+                    }
+                }
+                launch {
+                    whiteBall.move()
+                }
+                for (ball in ballSet) {
+                    launch {
+                        ball.move()
+                    }
                 }
             }
         }
@@ -58,20 +86,53 @@ class MoveController: Controller() {
         return Position(whiteBall.x, whiteBall.y)
     }
 
-    fun checkCollisions() {
+    private fun checkCollisions() {
+        checkWallCollision(whiteBall)
         for (ball in ballSet) {
-            if (ball.y - BALL_RADIUS <= 0 || ball.y + BALL_RADIUS >= CANVAS_HEIGHT) {
-                ball.changeVelocity(ball.vx, - ball.vy)
-            }
-            if (ball.x - BALL_RADIUS <= 0 || ball.x + BALL_RADIUS >= CANVAS_WIDTH) {
-                ball.changeVelocity(- ball.vx, ball.vy)
-            }
+            checkWallCollision(ball)
         }
         for ((b1, b2) in ballPairs) {
-            if (b1.distanceTo(b2) < 2 * BALL_RADIUS) {
-                b1.changeVelocity(b1.vx, b1.vy) // TODO calculate based on slide 39
-                b2.changeVelocity(b2.vx, b1.vy)
+            if (areColliding(b1, b2)) {
+                collide(b1, b2)
             }
         }
+    }
+
+    private fun checkWallCollision(ball: Ball) {
+        if (ball.y - BALL_RADIUS <= 0 && ball.vy <=0
+            || ball.y + BALL_RADIUS >= CANVAS_HEIGHT && ball.vy >= 0) {
+            ball.changeVelocity(ball.vx, - ball.vy)
+        }
+        if (ball.x - BALL_RADIUS <= 0 && ball.vx <= 0
+            || ball.x + BALL_RADIUS >= CANVAS_WIDTH && ball.vx >= 0) {
+            ball.changeVelocity(- ball.vx, ball.vy)
+        }
+    }
+
+    private fun areColliding(b1: Ball, b2: Ball): Boolean {
+        val dx = b1.x - b2.x
+        val dy = b1.y - b2.y
+        // check the distance less than 2*r
+        // check the distance less than 2*r
+        if (dx * dx + dy * dy < 4 * BALL_RADIUS * BALL_RADIUS) {
+            val dvx = b1.vx - b2.vx
+            val dvy = b1.vy - b2.vy
+            // check the balls are moving towards
+            if (dx * dvx + dy * dvy <= 0) return true
+        }
+        return false
+    }
+    private fun collide(b1: Ball, b2: Ball) {
+        val dx = b1.x - b2.x
+        val dy = b1.y - b2.y
+        val dvx = b1.vx - b2.vx
+        val dvy = b1.vy - b2.vy
+        val k = (dvx * dx + dvy * dy) / (dx * dx + dy * dy)
+        val uvx: Double = dx * k * IMPACT_LOSS
+        val uvy: Double = dy * k * IMPACT_LOSS
+        b1.vx -= uvx
+        b1.vy -= uvy
+        b2.vx += uvx
+        b2.vy += uvy
     }
 }

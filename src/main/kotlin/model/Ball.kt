@@ -1,5 +1,6 @@
 package model
 
+import kotlinx.coroutines.delay
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -10,6 +11,11 @@ class Ball(val id: Int, var x: Double, var y: Double) {
 
     suspend fun move() {
         while (true) {
+            delay(250)
+
+            vx -= D * vx / MASS
+            vy -= D * vy / MASS
+
             x += vx
             y += vy
         }
