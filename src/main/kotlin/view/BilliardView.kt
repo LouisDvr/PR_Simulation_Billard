@@ -18,7 +18,7 @@ class BilliardView: View("BilliardView") {
     private var isMoving = false
 
     override val root = borderpane {
-        center = vbox { group {  } }
+        center = stackpane { group {  } }
         bottom = hbox {
             button("Start") {
                 action {

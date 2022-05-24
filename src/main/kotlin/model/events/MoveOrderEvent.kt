@@ -1,5 +1,5 @@
 package model.events
 
-import tornadofx.FXEvent
+import tornadofx.*
 
-object MoveOrderEvent: FXEvent()
+object MoveOrderEvent: FXEvent(EventBus.RunOn.BackgroundThread)

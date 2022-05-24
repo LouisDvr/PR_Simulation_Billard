@@ -49,9 +49,14 @@ class MoveController: Controller() {
             runBlocking {
                 launch {
                     while (true) {
-                        delay(50)
+                        delay(20)
                         checkCollisions()
-//                        fire(RefreshEvent)
+                    }
+                }
+                launch {
+                    while (true) {
+                        delay(100)
+                        fire(RefreshEvent)
                     }
                 }
                 launch {
