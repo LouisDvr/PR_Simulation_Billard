@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import model.*
+import model.events.MouseClickedEvent
 import model.events.MoveOrderEvent
 import model.events.RefreshEvent
 import tornadofx.*
@@ -44,30 +45,9 @@ class MoveController: Controller() {
             }
         }
 
-        whiteBall.changeVelocity(20.0, 0.0)
-        subscribe<MoveOrderEvent> {
-            runBlocking {
-                launch {
-                    while (true) {
-                        delay(20)
-                        checkCollisions()
-                    }
-                }
-                launch {
-                    while (true) {
-                        delay(100)
-                        fire(RefreshEvent)
-                    }
-                }
-                launch {
-                    whiteBall.move()
-                }
-                for (ball in ballSet) {
-                    launch {
-                        ball.move()
-                    }
-                }
-            }
+        subscribe<MoveOrderEvent> { startMoving() }
+        subscribe<MouseClickedEvent> { event ->
+            handleClick(event.xMouse, event.yMouse)
         }
     }
 
@@ -81,6 +61,40 @@ class MoveController: Controller() {
             if (top) 0.5 * CANVAS_HEIGHT - distanceFromLeft * BALL_RADIUS
             else 0.5 * CANVAS_HEIGHT + distanceFromLeft * BALL_RADIUS
         )
+    }
+
+    private fun startMoving() {
+        runBlocking {
+            launch {
+                while (true) {
+                    delay(20)
+                    checkCollisions()
+                }
+            }
+            launch {
+                while (true) {
+                    delay(100)
+                    fire(RefreshEvent)
+                }
+            }
+            launch {
+                whiteBall.move()
+            }
+            for (ball in ballSet) {
+                launch {
+                    ball.move()
+                }
+            }
+        }
+    }
+
+    private fun handleClick(x: Double, y: Double) {
+        if (whiteBall.x - BALL_RADIUS < x && x < whiteBall.x + BALL_RADIUS
+            && whiteBall.y - BALL_RADIUS < y && y < whiteBall.y + BALL_RADIUS) {
+            val uvx = (whiteBall.x - x) * WHITE_BOOST
+            val uvy = (whiteBall.y - y) * WHITE_BOOST
+            whiteBall.changeVelocity(whiteBall.vx + uvx, whiteBall.vy + uvy)
+        }
     }
 
     fun getBallsPositions(): HashSet<Position> {

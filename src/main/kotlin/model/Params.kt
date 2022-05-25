@@ -8,3 +8,4 @@ const val MASS = 1
 const val D = 0.0
 
 const val IMPACT_LOSS = 0.7
+const val WHITE_BOOST = 2

@@ -6,6 +6,7 @@ import model.BALL_RADIUS
 import model.CANVAS_HEIGHT
 import model.CANVAS_WIDTH
 import model.Position
+import model.events.MouseClickedEvent
 import model.events.RefreshEvent
 import model.events.MoveOrderEvent
 import tornadofx.*
@@ -34,6 +35,9 @@ class BilliardView: View("BilliardView") {
     init {
         refresh()
         subscribe<RefreshEvent> { refresh() }
+        root.center.setOnMouseClicked {
+            if (isMoving) fire(MouseClickedEvent(it.x, it.y))
+        }
     }
 
     private fun refresh() {
