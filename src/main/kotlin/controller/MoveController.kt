@@ -146,8 +146,8 @@ class MoveController: Controller() {
         val dvx = b1.vx - b2.vx
         val dvy = b1.vy - b2.vy
         val k = (dvx * dx + dvy * dy) / (dx * dx + dy * dy)
-        val uvx: Double = dx * k * IMPACT_LOSS
-        val uvy: Double = dy * k * IMPACT_LOSS
+        val uvx: Double = dx * k * IMPACT_ENERGY_KEPT
+        val uvy: Double = dy * k * IMPACT_ENERGY_KEPT
         b1.vx -= uvx
         b1.vy -= uvy
         b2.vx += uvx
