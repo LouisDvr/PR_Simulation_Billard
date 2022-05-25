@@ -19,21 +19,20 @@ class MoveController: Controller() {
     init {
         val initialPositions = listOf(
             computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH),
-            // TODO: uncomment when it works with 2 balls
-//            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(3, true, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(3, false, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(4, true, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(4, false, 0.75 * CANVAS_WIDTH),
-//            computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-//            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-//            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-//            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-//            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
-//            Position(0.75 * CANVAS_WIDTH + 4 * 0.87 * 2 * BALL_RADIUS, 0.5 * CANVAS_HEIGHT)
+            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(3, true, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(3, false, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(4, true, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(4, false, 0.75 * CANVAS_WIDTH),
+            computeInitialPosition(0, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(1, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(1, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(2, true, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            computeInitialPosition(2, false, 0.75 * CANVAS_WIDTH + 0.87 * 4 * BALL_RADIUS),
+            Position(0.75 * CANVAS_WIDTH + 4 * 0.87 * 2 * BALL_RADIUS, 0.5 * CANVAS_HEIGHT)
         )
         for (i in initialPositions.indices) ballSet.add(Ball(i+1, initialPositions[i].x, initialPositions[i].y))
         for (b1 in ballSet) {

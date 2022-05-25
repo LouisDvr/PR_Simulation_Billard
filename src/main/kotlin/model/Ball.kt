@@ -1,8 +1,6 @@
 package model
 
 import kotlinx.coroutines.delay
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 class Ball(val id: Int, var x: Double, var y: Double) {
 
@@ -19,10 +17,6 @@ class Ball(val id: Int, var x: Double, var y: Double) {
             x += vx
             y += vy
         }
-    }
-
-    fun distanceTo(other: Ball): Double {
-        return sqrt((x - other.x).pow(2) + (y - other.y).pow(2))
     }
 
     fun changeVelocity(newVx: Double, newVy: Double) {
